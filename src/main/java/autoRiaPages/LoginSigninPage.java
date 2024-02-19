@@ -7,9 +7,11 @@ import static com.codeborne.selenide.Selenide.*;
 import static com.codeborne.selenide.Selenide.open;
 
 public class LoginSigninPage {
+    BasePage basePage = new BasePage();
 
-    String userFirstName = "Абжул";
-    String userSecondName = "Рахман";
+    public String userFirstName = "Абжул";
+    public String userSecondName = "Рахман";
+
     String userPassword = "password123ldma";
     int randomInt = 1 + (int) (Math.random() * 100000);
     String valueToCreateEmail = "heyAmiggo" + randomInt;
@@ -23,8 +25,17 @@ public class LoginSigninPage {
     private final SelenideElement emailSignInField = $("#registrationform-email");
     private final SelenideElement privacyPolicyAgreeCheckbox = $("[for=\"registrationform-agree\"]");
     private final SelenideElement submitRegistrationButton = $("#registration_button");
+    private final SelenideElement creationEmailFieldMailinator = $("#inbox_field");
+    private final SelenideElement searchEmailLettersMailinator = $(".primary-btn");
+    private final SelenideElement openFirstInboxEmailMailinatorr = $("[style=\"padding:17px 15px 0 10px;width:20px;\"] +.ng-binding");
+    private final SelenideElement secureCodePlaceMailinator = $("tbody h2");
+    private final SelenideElement secureCodeSiginField = $("#secure_code");
+    private final SelenideElement passwordSigninField = $("#new_pass");
+    private final SelenideElement confirmPasswordSigninField = $("#confirm_new");
+    private final SelenideElement submitSiginButton = $("[type='submit']");
 
-    public  LoginSigninPage fillInSigInForm1(){
+
+    public LoginSigninPage fillInSigInForm1() {
 
         switchTo().frame("login_frame");
 
@@ -43,28 +54,29 @@ public class LoginSigninPage {
         return this;
     }
 
-    public  LoginSigninPage fillInSigInForm2(){
-        executeJavaScript("window.open('', '_blank');");
-        open(switchTo().window(1).getCurrentUrl());
+    public LoginSigninPage fillInSigInForm2() {
+
+        //there we opeen new windows
+        basePage.switchToNewTab();
+
         open(mailinatorPage);
 
-        $("#inbox_field").setValue(newUserEmail).shouldHave(value(newUserEmail));
-        $(".primary-btn").click();
-        $("[style=\"padding:17px 15px 0 10px;width:20px;\"] +.ng-binding").click();
+        creationEmailFieldMailinator.setValue(newUserEmail).shouldHave(value(newUserEmail));
+        searchEmailLettersMailinator.click();
+        openFirstInboxEmailMailinatorr.click();
 
 
         switchTo().frame("html_msg_body");
 
-        String emailSecureCode = $("tbody h2").text();
+        String emailSecureCode = secureCodePlaceMailinator.text();
 
-
-        switchTo().window(0);
+        basePage.switchToFirstInitTab();
         switchTo().frame("login_frame");
 
-        $("#secure_code").setValue(emailSecureCode).shouldHave(value(emailSecureCode));
-        $("#new_pass").setValue(userPassword);
-        $("#confirm_new").setValue(userPassword);
-        $("[type='submit']").click();
+        secureCodeSiginField.setValue(emailSecureCode).shouldHave(value(emailSecureCode));
+        passwordSigninField.setValue(userPassword);
+        confirmPasswordSigninField.setValue(userPassword);
+        submitSiginButton.click();
 
         return this;
     }
